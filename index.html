@@ -68,20 +68,20 @@
             <div id="adminAddEpisodeContainer" class="hidden border-t border-slate-800 pt-4 mt-4">
                 <h4 class="text-xs font-bold text-amber-400 mb-2">➕ Add New Episode (Admin)</h4>
                 <input type="text" id="epTitle" placeholder="Episode Title (e.g. Episode 1)" class="w-full bg-slate-800 text-white border border-slate-700 p-2 mb-2 rounded text-xs">
-                <input type="text" id="epUrl" placeholder="YouTube Video Link (e.g. https://youtu.be/...)" class="w-full bg-slate-800 text-white border border-slate-700 p-2 mb-2 rounded text-xs">
+                <input type="text" id="epUrl" placeholder="YouTube Link (e.g. https://youtu.be/...)" class="w-full bg-slate-800 text-white border border-slate-700 p-2 mb-2 rounded text-xs">
                 <button onclick="uploadEpisode()" class="w-full bg-amber-500 text-slate-950 py-2 rounded text-xs font-bold hover:bg-amber-400">Save Episode</button>
             </div>
         </div>
     </div>
 
-    <!-- Video Player Modal -->
+    <!-- Video Player Modal (In-App Player) -->
     <div id="videoPlayerModal" class="fixed inset-0 bg-black hidden flex flex-col justify-center items-center z-[100] p-2">
         <div class="w-full max-w-3xl flex justify-between items-center p-2">
             <span id="playingVideoTitle" class="text-xs font-bold text-amber-400 truncate max-w-[80%]">Playing Video</span>
             <button onclick="closePlayer()" class="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold">Close ✕</button>
         </div>
         <div class="w-full max-w-3xl aspect-video bg-slate-950 rounded-lg overflow-hidden relative shadow-2xl border border-amber-500/40">
-            <iframe id="videoIframe" class="w-full h-full" src="" frameborder="0" allowfullscreen allow="autoplay"></iframe>
+            <iframe id="videoIframe" class="w-full h-full" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
     </div>
 
@@ -291,17 +291,22 @@
 
         async function uploadEpisode() {
             const title = document.getElementById('epTitle').value;
-            let url = document.getElementById('epUrl').value;
+            let url = document.getElementById('epUrl').value.trim();
 
             if (!title || !url) { alert('Sare fields bhariye!'); return; }
 
-            // Safe & Robust YouTube URL Parser
-            if (url.includes('watch?v=')) {
-                const videoId = url.split('watch?v=')[1].split('&')[0];
-                url = `https://www.youtube.com/embed/${videoId}`;
+            // Automatic YouTube URL to Embed Convertor
+            let videoId = '';
+            if (url.includes('v=')) {
+                videoId = url.split('v=')[1].split('&')[0];
             } else if (url.includes('youtu.be/')) {
-                const videoId = url.split('youtu.be/')[1].split('?')[0];
-                url = `https://www.youtube.com/embed/${videoId}`;
+                videoId = url.split('youtu.be/')[1].split('?')[0];
+            } else if (url.includes('embed/')) {
+                videoId = url.split('embed/')[1].split('?')[0];
+            }
+
+            if (videoId) {
+                url = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0`;
             }
 
             const { error } = await supabaseClient.from('episodes').insert([
