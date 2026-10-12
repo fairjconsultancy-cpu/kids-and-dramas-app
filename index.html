@@ -52,7 +52,7 @@
         </div>
     </section>
 
-    <!-- Episode List Modal (Shows Episodes when clicked on a show) -->
+    <!-- Episode List Modal -->
     <div id="episodesModal" class="fixed inset-0 bg-slate-950/90 hidden flex justify-center items-center z-50 p-4">
         <div class="bg-slate-900 rounded-2xl p-5 w-full max-w-lg max-h-[85vh] overflow-y-auto border border-amber-500/30 shadow-2xl">
             <div class="flex justify-between items-center mb-4">
@@ -68,19 +68,18 @@
             <div id="adminAddEpisodeContainer" class="hidden border-t border-slate-800 pt-4 mt-4">
                 <h4 class="text-xs font-bold text-amber-400 mb-2">➕ Add New Episode (Admin)</h4>
                 <input type="text" id="epTitle" placeholder="Episode Title (e.g. Episode 1)" class="w-full bg-slate-800 text-white border border-slate-700 p-2 mb-2 rounded text-xs">
-                <input type="text" id="epUrl" placeholder="Video Embed URL / YouTube Embed URL" class="w-full bg-slate-800 text-white border border-slate-700 p-2 mb-2 rounded text-xs">
+                <input type="text" id="epUrl" placeholder="YouTube Video Link (e.g. https://youtu.be/...)" class="w-full bg-slate-800 text-white border border-slate-700 p-2 mb-2 rounded text-xs">
                 <button onclick="uploadEpisode()" class="w-full bg-amber-500 text-slate-950 py-2 rounded text-xs font-bold hover:bg-amber-400">Save Episode</button>
             </div>
         </div>
     </div>
 
-    <!-- Video Player Modal (In-App Player) -->
+    <!-- Video Player Modal -->
     <div id="videoPlayerModal" class="fixed inset-0 bg-black hidden flex flex-col justify-center items-center z-[100] p-2">
         <div class="w-full max-w-3xl flex justify-between items-center p-2">
             <span id="playingVideoTitle" class="text-xs font-bold text-amber-400 truncate max-w-[80%]">Playing Video</span>
             <button onclick="closePlayer()" class="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold">Close ✕</button>
         </div>
-        <!-- Embedded Video Frame -->
         <div class="w-full max-w-3xl aspect-video bg-slate-950 rounded-lg overflow-hidden relative shadow-2xl border border-amber-500/40">
             <iframe id="videoIframe" class="w-full h-full" src="" frameborder="0" allowfullscreen allow="autoplay"></iframe>
         </div>
@@ -294,13 +293,15 @@
             const title = document.getElementById('epTitle').value;
             let url = document.getElementById('epUrl').value;
 
-            if (!title || !url) { alert('Fill all fields'); return; }
+            if (!title || !url) { alert('Sare fields bhariye!'); return; }
 
-            // YouTube URL convertor to Embed URL if standard link provided
+            // Safe & Robust YouTube URL Parser
             if (url.includes('watch?v=')) {
-                url = url.replace('watch?v=', 'embed/');
+                const videoId = url.split('watch?v=')[1].split('&')[0];
+                url = `https://www.youtube.com/embed/${videoId}`;
             } else if (url.includes('youtu.be/')) {
-                url = url.replace('youtu.be/', 'youtube.com/embed/');
+                const videoId = url.split('youtu.be/')[1].split('?')[0];
+                url = `https://www.youtube.com/embed/${videoId}`;
             }
 
             const { error } = await supabaseClient.from('episodes').insert([
@@ -310,7 +311,7 @@
             if (error) {
                 alert('Error: ' + error.message);
             } else {
-                alert('Episode added!');
+                alert('Episode add ho gaya!');
                 document.getElementById('epTitle').value = '';
                 document.getElementById('epUrl').value = '';
                 loadEpisodes(currentShowId);
