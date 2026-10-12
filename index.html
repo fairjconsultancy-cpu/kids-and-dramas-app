@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zari's Fashion World - PWA Store</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- PWA Manifest Link -->
+    <link rel="manifest" href="data:application/json;charset=utf-8,{
+      %22name%22: %22Zari's Fashion World%22,
+      %22short_name%22: %22Zari Store%22,
+      %22start_url%22: %22/%22,
+      %22display%22: %22standalone%22,
+      %22background_color%22: %22%23ffffff%22,
+      %22theme_color%22: %22%23db2777%22,
+      %22icons%22: [{%22src%22: %22https://img.icons8.com/color/512/shopping-bag.png%22, %22sizes%22: %22512x512%22, %22type%22: %22image/png%22}]
+    }">
+    <meta name="theme-color" content="#db2777">
+</head>
+<body class="bg-gray-50 font-sans pb-20">
+
+    <!-- Header -->
+    <header class="bg-pink-600 text-white p-4 shadow-md sticky top-0 z-50 flex justify-between items-center">
+        <h1 class="text-xl font-bold">✨ Zari's Fashion World</h1>
+        <button onclick="toggleAdminModal()" class="bg-white text-pink-600 px-3 py-1 rounded text-sm font-semibold shadow">Admin Login</button>
+    </header>
+
+    <!-- PWA Install Banner -->
+    <div id="installBanner" class="hidden bg-pink-100 border-b border-pink-200 p-3 text-center">
+        <p class="text-pink-800 text-sm font-medium mb-2">Apne mobile par app install karein taaki ek click mein khol sakein!</p>
+        <button id="installBtn" class="bg-pink-600 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow">📱 App Install Karein</button>
+    </div>
+
+    <!-- Category Tabs -->
+    <div class="flex justify-center gap-4 my-4 px-4">
+        <button onclick="filterCategory('Abaya')" id="btnAbaya" class="px-6 py-2 rounded-full font-bold bg-pink-600 text-white shadow">Abayas</button>
+        <button onclick="filterCategory('Perfume')" id="btnPerfume" class="px-6 py-2 rounded-full font-bold bg-gray-200 text-gray-700">Perfumes</button>
+    </div>
+
+    <!-- Product Grid -->
+    <main id="productGrid" class="grid grid-cols-2 gap-4 px-4 max-w-lg mx-auto">
+        <!-- Products will load here automatically -->
+    </main>
+
+    <!-- Admin Modal -->
+    <div id="adminModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50 p-4">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <h2 class="text-lg font-bold mb-4 text-pink-600">Admin Panel - Add Product</h2>
+            <div id="adminLoginForm">
+                <input type="email" id="adminEmail" placeholder="Admin Email" class="w-full border p-2 mb-2 rounded">
+                <input type="password" id="adminPassword" placeholder="Password" class="w-full border p-2 mb-4 rounded">
+                <button onclick="loginAdmin()" class="w-full bg-pink-600 text-white py-2 rounded font-bold">Login</button>
+            </div>
+            <div id="adminUploadForm" class="hidden">
+                <p class="text-green-600 font-semibold mb-2">✓ Logged in as Admin</p>
+                <input type="text" id="pTitle" placeholder="Product Name" class="w-full border p-2 mb-2 rounded">
+                <select id="pCategory" class="w-full border p-2 mb-2 rounded">
+                    <option value="Abaya">Abaya</option>
+                    <option value="Perfume">Perfume</option>
+                </select>
+                <input type="number" id="pPrice" placeholder="Price (Rs)" class="w-full border p-2 mb-2 rounded">
+                <textarea id="pDesc" placeholder="Variations (e.g. Size: Free, Color: Black)" class="w-full border p-2 mb-2 rounded"></textarea>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Upload Images (Multiple):</label>
+                <input type="file" id="pImage" multiple accept="image/*" class="w-full border p-2 mb-4 rounded">
+                <button onclick="uploadProduct()" class="w-full bg-green-600 text-white py-2 rounded font-bold mb-2">Publish Product</button>
+                <button onclick="logoutAdmin()" class="w-full bg-gray-400 text-white py-2 rounded font-bold">Logout</button>
+            </div>
+            <button onclick="toggleAdminModal()" class="w-full mt-4 text-gray-500 text-sm">Close</button>
+        </div>
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        // Supabase Configuration
+        const SUPABASE_URL = "https://bfstugwiughvzsecngcg.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_owxtj-rFppjSWID2TxjyPw_254halyB";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentCategory = 'Abaya';
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBanner').classList.remove('hidden');
+        });
+
+        document.getElementById('installBtn').addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    document.getElementById('installBanner').classList.add('hidden');
+                }
+                deferredPrompt = null;
+            }
+        });
+
+        function toggleAdminModal() {
+            const modal = document.getElementById('adminModal');
+            modal.classList.toggle('hidden');
+        }
+
+        async function loginAdmin() {
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) {
+                alert('Login Failed: ' + error.message);
+            } else {
+                alert('Login Successful!');
+                document.getElementById('adminLoginForm').classList.add('hidden');
+                document.getElementById('adminUploadForm').classList.remove('hidden');
+            }
+        }
+
+        async function logoutAdmin() {
+            await supabaseClient.auth.signOut();
+            document.getElementById('adminLoginForm').classList.remove('hidden');
+            document.getElementById('adminUploadForm').classList.add('hidden');
+            alert('Logged out');
+        }
+
+        function filterCategory(cat) {
+            currentCategory = cat;
+            if(cat === 'Abaya') {
+                document.getElementById('btnAbaya').className = "px-6 py-2 rounded-full font-bold bg-pink-600 text-white shadow";
+                document.getElementById('btnPerfume').className = "px-6 py-2 rounded-full font-bold bg-gray-200 text-gray-700";
+            } else {
+                document.getElementById('btnPerfume').className = "px-6 py-2 rounded-full font-bold bg-pink-600 text-white shadow";
+                document.getElementById('btnAbaya').className = "px-6 py-2 rounded-full font-bold bg-gray-200 text-gray-700";
+            }
+            loadProducts();
+        }
+
+        async function loadProducts() {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = '<p class="col-span-2 text-center text-gray-500 py-10">Loading products...</p>';
+            
+            const { data, error } = await supabaseClient
+                .from('products')
+                .select('*')
+                .eq('category', currentCategory)
+                .order('id', { ascending: false });
+
+            if (error) {
+                grid.innerHTML = '<p class="col-span-2 text-center text-red-500">Error loading products</p>';
+                return;
+            }
+
+            if (data.length === 0) {
+                grid.innerHTML = '<p class="col-span-2 text-center text-gray-500 py-10">No products found in this category.</p>';
+                return;
+            }
+
+            grid.innerHTML = '';
+            data.forEach(p => {
+                const imgUrl = p.images && p.images.length > 0 ? p.images[0] : 'https://via.placeholder.com/300';
+                const whatsappMsg = encodeURIComponent(`Salam! Mujhe yeh product order karna hai:\nProduct: ${p.title}\nPrice: Rs. ${p.price}\nDetails: ${p.description}`);
+                
+                grid.innerHTML += `
+                    <div class="bg-white rounded-lg shadow overflow-hidden flex flex-col justify-between">
+                        <div>
+                            <img src="${imgUrl}" alt="${p.title}" class="w-full h-48 object-cover cursor-pointer hover:scale-105 transition" onclick="window.open('${imgUrl}', '_blank')">
+                            <div class="p-3">
+                                <h3 class="font-bold text-gray-800 text-sm mb-1">${p.title}</h3>
+                                <p class="text-xs text-gray-500 mb-2">${p.description || ''}</p>
+                                <p class="text-pink-600 font-extrabold text-sm">Rs. ${p.price}</p>
+                            </div>
+                        </div>
+                        <div class="p-3 pt-0">
+                            <a href="https://wa.me/923339998286?text=${whatsappMsg}" target="_blank" class="block text-center bg-green-500 text-white py-2 rounded text-xs font-bold shadow hover:bg-green-600">Order via WhatsApp</a>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        async function uploadProduct() {
+            const title = document.getElementById('pTitle').value;
+            const category = document.getElementById('pCategory').value;
+            const price = document.getElementById('pPrice').value;
+            const description = document.getElementById('pDesc').value;
+            const fileInput = document.getElementById('pImage');
+
+            if (!title || !price || fileInput.files.length === 0) {
+                alert('Please fill all required fields and select images!');
+                return;
+            }
+
+            alert('Uploading images, please wait...');
+            let imageUrls = [];
+
+            for (let file of fileInput.files) {
+                const fileName = Date.now() + '_' + file.name;
+                const { data, error } = await supabaseClient.storage.from('product-images').upload(fileName, file);
+                if (!error) {
+                    const { data: publicURL } = supabaseClient.storage.from('product-images').getPublicUrl(fileName);
+                    imageUrls.push(publicURL.publicUrl);
+                }
+            }
+
+            const { error: dbError } = await supabaseClient.from('products').insert([
+                { title, category, price: parseFloat(price), description, images: imageUrls }
+            ]);
+
+            if (dbError) {
+                alert('Error saving product: ' + dbError.message);
+            } else {
+                alert('Product uploaded successfully!');
+                document.getElementById('pTitle').value = '';
+                document.getElementById('pPrice').value = '';
+                document.getElementById('pDesc').value = '';
+                document.getElementById('pImage').value = '';
+                toggleAdminModal();
+                loadProducts();
+            }
+        }
+
+        loadProducts();
+    </script>
+</body>
+</html>
