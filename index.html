@@ -130,7 +130,16 @@
                     <option value="Urdu Cartoons">Urdu Cartoons</option>
                     <option value="English Cartoons">English Cartoons</option>
                 </select>
-                <input type="text" id="sThumb" placeholder="Thumbnail Image URL" class="w-full bg-slate-800 border border-slate-700 p-2.5 mb-2 rounded-xl text-xs text-white">
+                
+                <!-- Computer / Gallery Image Upload Input -->
+                <label class="block text-[11px] text-amber-400 font-bold mb-1">Select Thumbnail Image from Computer/Gallery:</label>
+                <input type="file" id="sThumbFile" accept="image/*" onchange="handleImagePreview(event)" class="w-full bg-slate-800 border border-slate-700 p-2 mb-2 rounded-xl text-xs text-white file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-500 file:text-slate-950 hover:file:bg-amber-400">
+                
+                <!-- Image Preview Box -->
+                <div id="imagePreviewContainer" class="mb-2 hidden">
+                    <img id="imgPreview" class="w-24 h-16 object-cover rounded-lg border border-amber-500/50">
+                </div>
+
                 <textarea id="sDesc" placeholder="Description" class="w-full bg-slate-800 border border-slate-700 p-2.5 mb-3 rounded-xl text-xs text-white"></textarea>
                 
                 <button onclick="uploadShow()" class="w-full bg-amber-500 text-slate-950 py-2.5 rounded-xl font-black text-xs mb-2 shadow-lg">Publish Cartoon Show</button>
@@ -149,6 +158,7 @@
         let currentCategory = 'Urdu Cartoons';
         let currentShowId = null;
         let isAdminLoggedIn = false;
+        let base64Thumbnail = '';
 
         function filterCategory(cat) {
             currentCategory = cat;
@@ -193,6 +203,20 @@
             document.getElementById('adminUploadForm').classList.add('hidden');
             alert('Logged out');
             loadShows();
+        }
+
+        // Handle Image File Selection & Convert to Base64
+        function handleImagePreview(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = function () {
+                    base64Thumbnail = reader.result;
+                    document.getElementById('imgPreview').src = base64Thumbnail;
+                    document.getElementById('imagePreviewContainer').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
         }
 
         async function loadShows() {
@@ -244,13 +268,13 @@
         async function uploadShow() {
             const title = document.getElementById('sTitle').value;
             const category = document.getElementById('sCategory').value;
-            const thumbnail = document.getElementById('sThumb').value;
             const description = document.getElementById('sDesc').value;
 
             if (!title) { alert('Title is required'); return; }
+            if (!base64Thumbnail) { alert('Please select a thumbnail image!'); return; }
 
             const { error } = await supabaseClient.from('shows').insert([
-                { title, category, thumbnail, description }
+                { title, category, thumbnail: base64Thumbnail, description }
             ]);
 
             if (error) {
@@ -258,8 +282,10 @@
             } else {
                 alert('Cartoon Show Added Successfully!');
                 document.getElementById('sTitle').value = '';
-                document.getElementById('sThumb').value = '';
                 document.getElementById('sDesc').value = '';
+                document.getElementById('sThumbFile').value = '';
+                document.getElementById('imagePreviewContainer').classList.add('hidden');
+                base64Thumbnail = '';
                 toggleAdminModal();
                 loadShows();
             }
@@ -319,7 +345,6 @@
 
             if (!title || !url) { alert('Sare fields bhariye!'); return; }
 
-            // Automatic YouTube URL to Embed Convertor
             let videoId = '';
             if (url.includes('v=')) {
                 videoId = url.split('v=')[1].split('&')[0];
