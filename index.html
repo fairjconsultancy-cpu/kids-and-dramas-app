@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kids Cartoons World</title>
+    <title>Kids & Dramas World</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Supabase SDK -->
@@ -14,8 +14,8 @@
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="data:application/json;charset=utf-8,{
-      %22name%22: %22Kids Cartoons World%22,
-      %22short_name%22: %22Kids Fun%22,
+      %22name%22: %22Kids %26 Dramas World%22,
+      %22short_name%22: %22Entertainment%22,
       %22start_url%22: %22/%22,
       %22display%22: %22standalone%22,
       %22background_color%22: %22%230f172a%22,
@@ -30,11 +30,400 @@
     <!-- Header -->
     <header class="bg-slate-950 p-4 shadow-lg sticky top-0 z-50 flex justify-between items-center border-b border-amber-500/30">
         <div class="flex items-center gap-2">
-            <span class="text-3xl animate-bounce">🎈</span>
+            <span class="text-3xl animate-bounce">🎬</span>
             <div>
-                <h1 class="text-lg font-black text-amber-400 tracking-wider uppercase">Kids Cartoons</h1>
-                <p class="text-[10px] text-slate-300 font-semibold">Fun, Magic & Stories!</p>
+                <h1 class="text-lg font-black text-amber-400 tracking-wider uppercase">Cartoons & Dramas</h1>
+                <p class="text-[10px] text-slate-300 font-semibold">Unlimited Fun, Cartoons & Dramas!</p>
             </div>
+        </div>
+        <button onclick="toggleAdminModal()" class="bg-amber-500 text-slate-950 px-3 py-1.5 rounded-full text-xs font-black shadow-lg hover:bg-amber-400 transition transform active:scale-95">Admin</button>
+    </header>
+
+    <!-- Welcome Banner -->
+    <div class="px-4 pt-4 max-w-2xl mx-auto">
+        <div class="relative bg-gradient-to-r from-amber-500 via-orange-500 to-pink-500 rounded-2xl p-4 overflow-hidden shadow-2xl flex items-center justify-between border-2 border-amber-300">
+            <div class="z-10 max-w-[65%]">
+                <span class="bg-black/30 text-amber-200 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">Welcome Everyone! 🥳</span>
+                <h2 class="text-xl font-black text-white drop-shadow-md leading-tight mt-1">Watch Cartoons & Dramas!</h2>
+                <p class="text-[11px] text-amber-100 font-bold mt-1">Tap & Play Unlimited Entertainment!</p>
+            </div>
+            <!-- Mascot GIF -->
+            <img src="https://media.giphy.com/media/3o7TKSjRrfIPjeiVyM/giphy.gif" alt="Animation" class="w-24 h-24 object-contain z-10 drop-shadow-lg transform hover:scale-110 transition duration-300">
+            <div class="absolute -right-4 -bottom-4 text-6xl opacity-20">⭐</div>
+            <div class="absolute left-1/2 top-0 text-5xl opacity-20">✨</div>
+        </div>
+    </div>
+
+    <!-- Category Buttons (Urdu & English Cartoons + Pakistani, Turkish & Indian Dramas) -->
+    <div class="px-4 my-5 max-w-2xl mx-auto overflow-x-auto pb-2 scrollbar-none">
+        <div class="flex gap-2 min-w-max sm:grid sm:grid-cols-3 md:grid-cols-5">
+            <button onclick="filterCategory('Urdu Cartoons')" id="btnUrduCartoons" class="cat-btn py-2.5 px-3 rounded-2xl font-black text-xs text-center shadow-lg border-2 transition transform active:scale-95 flex items-center justify-center gap-1.5 bg-amber-500 border-amber-300 text-slate-950">
+                <span>🇵🇰</span> URDU CARTOONS
+            </button>
+            <button onclick="filterCategory('English Cartoons')" id="btnEnglishCartoons" class="cat-btn py-2.5 px-3 rounded-2xl font-black text-xs text-center shadow-lg border-2 transition transform active:scale-95 flex items-center justify-center gap-1.5 bg-slate-800 border-slate-700 text-slate-300">
+                <span>🇬🇧</span> ENG CARTOONS
+            </button>
+            <button onclick="filterCategory('Pakistani Dramas')" id="btnPakistaniDramas" class="cat-btn py-2.5 px-3 rounded-2xl font-black text-xs text-center shadow-lg border-2 transition transform active:scale-95 flex items-center justify-center gap-1.5 bg-slate-800 border-slate-700 text-slate-300">
+                <span>🇵🇰</span> PAK DRAMAS
+            </button>
+            <button onclick="filterCategory('Turkish Dramas')" id="btnTurkishDramas" class="cat-btn py-2.5 px-3 rounded-2xl font-black text-xs text-center shadow-lg border-2 transition transform active:scale-95 flex items-center justify-center gap-1.5 bg-slate-800 border-slate-700 text-slate-300">
+                <span>🇹🇷</span> TURKISH DRAMAS
+            </button>
+            <button onclick="filterCategory('Indian Dramas')" id="btnIndianDramas" class="cat-btn py-2.5 px-3 rounded-2xl font-black text-xs text-center shadow-lg border-2 transition transform active:scale-95 flex items-center justify-center gap-1.5 bg-slate-800 border-slate-700 text-slate-300">
+                <span>🇮🇳</span> INDIAN DRAMAS
+            </button>
+        </div>
+    </div>
+
+    <!-- Shows Section -->
+    <section id="showsContainer" class="px-4 max-w-2xl mx-auto">
+        <div class="flex items-center justify-between mb-3">
+            <h2 id="categoryTitle" class="text-sm font-black text-amber-400 uppercase tracking-wider flex items-center gap-1">
+                <span>🎬</span> URDU CARTOONS
+            </h2>
+            <span class="text-[10px] text-slate-400 font-bold">Select a show to play</span>
+        </div>
+
+        <div id="showsGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <!-- Shows Cards Will Load Here -->
+        </div>
+    </section>
+
+    <!-- Episode List Modal -->
+    <div id="episodesModal" class="fixed inset-0 bg-slate-950/90 hidden flex justify-center items-center z-50 p-4 backdrop-blur-sm">
+        <div class="bg-slate-900 rounded-3xl p-5 w-full max-w-lg max-h-[85vh] overflow-y-auto border-2 border-amber-500/40 shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-3">
+                <h3 id="modalShowTitle" class="font-black text-lg text-amber-400 truncate">Show Episodes</h3>
+                <button onclick="closeEpisodesModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 w-8 h-8 rounded-full font-bold text-sm flex items-center justify-center">✕</button>
+            </div>
+            
+            <div id="episodesList" class="space-y-2 mb-4">
+                <!-- Episodes list here -->
+            </div>
+
+            <!-- Admin Add Episode Form Inside Modal -->
+            <div id="adminAddEpisodeContainer" class="hidden border-t border-slate-800 pt-4 mt-4">
+                <h4 class="text-xs font-bold text-amber-400 mb-2">➕ Add New Episode / Part (Admin)</h4>
+                <input type="text" id="epTitle" placeholder="Episode Title (e.g. Episode 1)" class="w-full bg-slate-800 text-white border border-slate-700 p-2.5 mb-2 rounded-xl text-xs focus:outline-none focus:border-amber-400">
+                <input type="text" id="epUrl" placeholder="YouTube Link (e.g. https://youtu.be/...)" class="w-full bg-slate-800 text-white border border-slate-700 p-2.5 mb-2 rounded-xl text-xs focus:outline-none focus:border-amber-400">
+                <button onclick="uploadEpisode()" class="w-full bg-amber-500 text-slate-950 py-2.5 rounded-xl text-xs font-black hover:bg-amber-400 shadow-md">Save Episode</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Player Modal (In-App Player) -->
+    <div id="videoPlayerModal" class="fixed inset-0 bg-black/95 hidden flex flex-col justify-center items-center z-[100] p-2">
+        <div class="w-full max-w-3xl flex justify-between items-center p-2 mb-1">
+            <span id="playingVideoTitle" class="text-xs font-bold text-amber-400 truncate max-w-[80%] flex items-center gap-1">
+                <span>▶️</span> Playing Video
+            </span>
+            <button onclick="closePlayer()" class="bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-full text-xs font-black shadow-lg">Close ✕</button>
+        </div>
+        <div class="w-full max-w-3xl aspect-video bg-slate-950 rounded-2xl overflow-hidden relative shadow-2xl border-2 border-amber-500/50">
+            <iframe id="videoIframe" class="w-full h-full" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- Admin Login / Add Show Modal -->
+    <div id="adminModal" class="fixed inset-0 bg-slate-950/80 hidden flex justify-center items-center z-50 p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl">
+            <h2 class="text-base font-black mb-4 text-amber-400 flex items-center gap-1">🔒 Admin Panel</h2>
+            <div id="adminLoginForm">
+                <input type="email" id="adminEmail" placeholder="Admin Email" class="w-full bg-slate-800 border border-slate-700 p-2.5 mb-2 rounded-xl text-xs text-white">
+                <input type="password" id="adminPassword" placeholder="Password" class="w-full bg-slate-800 border border-slate-700 p-2.5 mb-4 rounded-xl text-xs text-white">
+                <button onclick="loginAdmin()" class="w-full bg-amber-500 text-slate-950 py-2.5 rounded-xl font-black text-xs shadow-lg">Login</button>
+            </div>
+            <div id="adminUploadForm" class="hidden">
+                <p class="text-green-400 font-semibold mb-3 text-xs">✓ Logged in as Admin</p>
+                <input type="text" id="sTitle" placeholder="Show / Drama / Cartoon Title" class="w-full bg-slate-800 border border-slate-700 p-2.5 mb-2 rounded-xl text-xs text-white">
+                <select id="sCategory" class="w-full bg-slate-800 border border-slate-700 p-2.5 mb-2 rounded-xl text-xs text-white">
+                    <option value="Urdu Cartoons">Urdu Cartoons</option>
+                    <option value="English Cartoons">English Cartoons</option>
+                    <option value="Pakistani Dramas">Pakistani Dramas</option>
+                    <option value="Turkish Dramas">Turkish Dramas</option>
+                    <option value="Indian Dramas">Indian Dramas</option>
+                </select>
+                
+                <!-- Computer / Gallery Image Upload Input -->
+                <label class="block text-[11px] text-amber-400 font-bold mb-1">Select Thumbnail Image from Computer/Gallery:</label>
+                <input type="file" id="sThumbFile" accept="image/*" onchange="handleImagePreview(event)" class="w-full bg-slate-800 border border-slate-700 p-2 mb-2 rounded-xl text-xs text-white file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-500 file:text-slate-950 hover:file:bg-amber-400">
+                
+                <!-- Image Preview Box -->
+                <div id="imagePreviewContainer" class="mb-2 hidden">
+                    <img id="imgPreview" class="w-24 h-16 object-cover rounded-lg border border-amber-500/50">
+                </div>
+
+                <textarea id="sDesc" placeholder="Description" class="w-full bg-slate-800 border border-slate-700 p-2.5 mb-3 rounded-xl text-xs text-white"></textarea>
+                
+                <button onclick="uploadShow()" class="w-full bg-amber-500 text-slate-950 py-2.5 rounded-xl font-black text-xs mb-2 shadow-lg">Publish Show / Drama</button>
+                <button onclick="logoutAdmin()" class="w-full bg-slate-700 text-white py-2 rounded-xl font-bold text-xs">Logout</button>
+            </div>
+            <button onclick="toggleAdminModal()" class="w-full mt-3 text-slate-400 text-xs">Close</button>
+        </div>
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        const SUPABASE_URL = "https://itioklvniyrwofnsivtn.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0aW9rbHZuaXlyd29mbnNpdnRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4MjQ3MTQsImV4cCI6MjEwNzQwMDcxNH0.a7YY-avfVf9eq8GDjs3SVFe0LyPJ2bQWCZFAGlWCBW4";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentCategory = 'Urdu Cartoons';
+        let currentShowId = null;
+        let isAdminLoggedIn = false;
+        let base64Thumbnail = '';
+
+        const categoryButtons = {
+            'Urdu Cartoons': 'btnUrduCartoons',
+            'English Cartoons': 'btnEnglishCartoons',
+            'Pakistani Dramas': 'btnPakistaniDramas',
+            'Turkish Dramas': 'btnTurkishDramas',
+            'Indian Dramas': 'btnIndianDramas'
+        };
+
+        function filterCategory(cat) {
+            currentCategory = cat;
+            document.getElementById('categoryTitle').innerHTML = `<span>🎬</span> ${cat.toUpperCase()}`;
+            
+            // Reset all category buttons active state
+            Object.keys(categoryButtons).forEach(key => {
+                const btn = document.getElementById(categoryButtons[key]);
+                if (btn) {
+                    if (key === cat) {
+                        btn.className = "cat-btn py-2.5 px-3 rounded-2xl font-black text-xs text-center shadow-lg border-2 transition transform active:scale-95 flex items-center justify-center gap-1.5 bg-amber-500 border-amber-300 text-slate-950";
+                    } else {
+                        btn.className = "cat-btn py-2.5 px-3 rounded-2xl font-black text-xs text-center shadow-lg border-2 transition transform active:scale-95 flex items-center justify-center gap-1.5 bg-slate-800 border-slate-700 text-slate-300";
+                    }
+                }
+            });
+
+            loadShows();
+        }
+
+        function toggleAdminModal() {
+            document.getElementById('adminModal').classList.toggle('hidden');
+        }
+
+        async function loginAdmin() {
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) {
+                alert('Login Failed: ' + error.message);
+            } else {
+                isAdminLoggedIn = true;
+                alert('Login Successful!');
+                document.getElementById('adminLoginForm').classList.add('hidden');
+                document.getElementById('adminUploadForm').classList.remove('hidden');
+                loadShows();
+            }
+        }
+
+        async function logoutAdmin() {
+            await supabaseClient.auth.signOut();
+            isAdminLoggedIn = false;
+            document.getElementById('adminLoginForm').classList.remove('hidden');
+            document.getElementById('adminUploadForm').classList.add('hidden');
+            alert('Logged out');
+            loadShows();
+        }
+
+        // Handle Image File Selection & Convert to Base64
+        function handleImagePreview(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = function () {
+                    base64Thumbnail = reader.result;
+                    document.getElementById('imgPreview').src = base64Thumbnail;
+                    document.getElementById('imagePreviewContainer').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function loadShows() {
+            const grid = document.getElementById('showsGrid');
+            grid.innerHTML = '<p class="col-span-full text-center text-slate-500 py-10 text-xs font-bold">Loading Shows & Dramas...</p>';
+
+            const { data, error } = await supabaseClient
+                .from('shows')
+                .select('*')
+                .eq('category', currentCategory)
+                .order('id', { ascending: false });
+
+            if (error) {
+                grid.innerHTML = '<p class="col-span-full text-center text-red-400 text-xs">Error loading data.</p>';
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                grid.innerHTML = '<p class="col-span-full text-center text-slate-500 py-10 text-xs font-bold">No shows found in this category yet!</p>';
+                return;
+            }
+
+            grid.innerHTML = '';
+            data.forEach(s => {
+                const thumb = s.thumbnail || 'https://via.placeholder.com/300x400?text=No+Image';
+                let deleteBtn = isAdminLoggedIn ? `<button onclick="deleteShow(${s.id})" class="mt-2 w-full bg-red-600/80 hover:bg-red-600 text-white py-1 rounded-lg text-[10px] font-bold">🗑️ Delete</button>` : '';
+
+                grid.innerHTML += `
+                    <div class="bg-slate-800/90 rounded-2xl overflow-hidden border border-slate-700/80 shadow-lg flex flex-col justify-between hover:border-amber-500/50 transition">
+                        <div onclick="openEpisodesModal(${s.id}, '${s.title}')" class="cursor-pointer group">
+                            <div class="relative overflow-hidden aspect-[3/4]">
+                                <img src="${thumb}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent"></div>
+                                <span class="absolute bottom-2 left-2 text-xs font-black text-amber-400 flex items-center gap-1 bg-black/60 px-2 py-0.5 rounded-full">► Watch</span>
+                            </div>
+                            <div class="p-2.5">
+                                <h3 class="font-black text-xs text-slate-100 truncate">${s.title}</h3>
+                                <p class="text-[10px] text-slate-400 line-clamp-1 mt-0.5">${s.description || ''}</p>
+                            </div>
+                        </div>
+                        <div class="px-2.5 pb-2.5 pt-0">
+                            ${deleteBtn}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        async function uploadShow() {
+            const title = document.getElementById('sTitle').value;
+            const category = document.getElementById('sCategory').value;
+            const description = document.getElementById('sDesc').value;
+
+            if (!title) { alert('Title is required'); return; }
+            if (!base64Thumbnail) { alert('Please select a thumbnail image!'); return; }
+
+            const { error } = await supabaseClient.from('shows').insert([
+                { title, category, thumbnail: base64Thumbnail, description }
+            ]);
+
+            if (error) {
+                alert('Error: ' + error.message);
+            } else {
+                alert('Show Added Successfully!');
+                document.getElementById('sTitle').value = '';
+                document.getElementById('sDesc').value = '';
+                document.getElementById('sThumbFile').value = '';
+                document.getElementById('imagePreviewContainer').classList.add('hidden');
+                base64Thumbnail = '';
+                toggleAdminModal();
+                loadShows();
+            }
+        }
+
+        async function openEpisodesModal(showId, showTitle) {
+            currentShowId = showId;
+            document.getElementById('modalShowTitle').innerText = showTitle;
+            document.getElementById('episodesModal').classList.remove('hidden');
+
+            if (isAdminLoggedIn) {
+                document.getElementById('adminAddEpisodeContainer').classList.remove('hidden');
+            } else {
+                document.getElementById('adminAddEpisodeContainer').classList.add('hidden');
+            }
+
+            loadEpisodes(showId);
+        }
+
+        function closeEpisodesModal() {
+            document.getElementById('episodesModal').classList.add('hidden');
+        }
+
+        async function loadEpisodes(showId) {
+            const list = document.getElementById('episodesList');
+            list.innerHTML = '<p class="text-center text-slate-500 py-4 text-xs font-bold">Loading Episodes...</p>';
+
+            const { data, error } = await supabaseClient
+                .from('episodes')
+                .select('*')
+                .eq('show_id', showId)
+                .order('id', { ascending: true });
+
+            if (error || !data || data.length === 0) {
+                list.innerHTML = '<p class="text-center text-slate-500 py-4 text-xs font-bold">No episodes added yet.</p>';
+                return;
+            }
+
+            list.innerHTML = '';
+            data.forEach((ep, idx) => {
+                let delBtn = isAdminLoggedIn ? `<button onclick="deleteEpisode(${ep.id})" class="text-red-400 text-xs ml-2">🗑️</button>` : '';
+                list.innerHTML += `
+                    <div class="flex justify-between items-center bg-slate-800/90 p-3 rounded-xl border border-slate-700/60 shadow">
+                        <span class="text-xs font-black text-slate-200">EP ${idx + 1}: ${ep.episode_title}</span>
+                        <div class="flex items-center gap-2">
+                            <button onclick="playVideo('${ep.video_url}', '${ep.episode_title}')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-1.5 rounded-lg text-xs font-black shadow">► Play</button>
+                            ${delBtn}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        async function uploadEpisode() {
+            const title = document.getElementById('epTitle').value;
+            let url = document.getElementById('epUrl').value.trim();
+
+            if (!title || !url) { alert('Sare fields bhariye!'); return; }
+
+            let videoId = '';
+            if (url.includes('v=')) {
+                videoId = url.split('v=')[1].split('&')[0];
+            } else if (url.includes('youtu.be/')) {
+                videoId = url.split('youtu.be/')[1].split('?')[0];
+            } else if (url.includes('embed/')) {
+                videoId = url.split('embed/')[1].split('?')[0];
+            }
+
+            if (videoId) {
+                url = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0`;
+            }
+
+            const { error } = await supabaseClient.from('episodes').insert([
+                { show_id: currentShowId, episode_title: title, video_url: url }
+            ]);
+
+            if (error) {
+                alert('Error: ' + error.message);
+            } else {
+                alert('Episode Add Ho Gaya!');
+                document.getElementById('epTitle').value = '';
+                document.getElementById('epUrl').value = '';
+                loadEpisodes(currentShowId);
+            }
+        }
+
+        function playVideo(url, title) {
+            document.getElementById('playingVideoTitle').innerText = title;
+            document.getElementById('videoIframe').src = url;
+            document.getElementById('videoPlayerModal').classList.remove('hidden');
+        }
+
+        function closePlayer() {
+            document.getElementById('videoIframe').src = '';
+            document.getElementById('videoPlayerModal').classList.add('hidden');
+        }
+
+        async function deleteShow(id) {
+            if (confirm('Delete this show?')) {
+                await supabaseClient.from('shows').delete().eq('id', id);
+                loadShows();
+            }
+        }
+
+        async function deleteEpisode(id) {
+            if (confirm('Delete episode?')) {
+                await supabaseClient.from('episodes').delete().eq('id', id);
+                loadEpisodes(currentShowId);
+            }
+        }
+
+        loadShows();
+    </script>
+</body>
+</html>            </div>
         </div>
         <button onclick="toggleAdminModal()" class="bg-amber-500 text-slate-950 px-3 py-1.5 rounded-full text-xs font-black shadow-lg hover:bg-amber-400 transition transform active:scale-95">Admin</button>
     </header>
