@@ -39,55 +39,87 @@
         <button onclick="toggleAdminModal()" class="bg-amber-500 text-slate-950 px-3 py-1.5 rounded-full text-xs font-black shadow-lg hover:bg-amber-400 transition transform active:scale-95">Admin</button>
     </header>
 
-    <!-- Welcome Banner (Single Instance Only) -->
-    <div class="px-4 pt-4 max-w-2xl mx-auto">
-        <div class="relative bg-gradient-to-r from-amber-500 via-orange-500 to-pink-500 rounded-2xl p-4 overflow-hidden shadow-2xl flex items-center justify-between border-2 border-amber-300">
-            <div class="z-10 max-w-[65%]">
-                <span class="bg-black/30 text-amber-200 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">Welcome Everyone! 🥳</span>
-                <h2 class="text-xl font-black text-white drop-shadow-md leading-tight mt-1">Watch Cartoons & Dramas!</h2>
-                <p class="text-[11px] text-amber-100 font-bold mt-1">Tap & Play Unlimited Entertainment!</p>
+    <!-- Main Container with Sidebar & Content Layout -->
+    <div class="max-w-6xl mx-auto px-4 mt-4 grid grid-cols-1 md:grid-cols-4 gap-6">
+        
+        <!-- Left Sidebar Column for Categories -->
+        <aside class="hidden md:block md:col-span-1 bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80 h-fit sticky top-20 shadow-xl">
+            <h3 class="text-xs font-black text-amber-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                <span>📂</span> Categories
+            </h3>
+            <div class="space-y-2">
+                <button onclick="filterCategory('Urdu Cartoons')" id="sideBtnUrduCartoons" class="side-cat-btn w-full py-2.5 px-3 rounded-xl font-black text-xs text-left shadow transition flex items-center gap-2 bg-amber-500 text-slate-950">
+                    <span>🇵🇰</span> Urdu Cartoons
+                </button>
+                <button onclick="filterCategory('English Cartoons')" id="sideBtnEnglishCartoons" class="side-cat-btn w-full py-2.5 px-3 rounded-xl font-black text-xs text-left shadow transition flex items-center gap-2 bg-slate-900 text-slate-300 hover:bg-slate-800">
+                    <span>🇬🇧</span> English Cartoons
+                </button>
+                <button onclick="filterCategory('Pakistani Dramas')" id="sideBtnPakistaniDramas" class="side-cat-btn w-full py-2.5 px-3 rounded-xl font-black text-xs text-left shadow transition flex items-center gap-2 bg-slate-900 text-slate-300 hover:bg-slate-800">
+                    <span>🇵🇰</span> Pakistani Dramas
+                </button>
+                <button onclick="filterCategory('Turkish Dramas')" id="sideBtnTurkishDramas" class="side-cat-btn w-full py-2.5 px-3 rounded-xl font-black text-xs text-left shadow transition flex items-center gap-2 bg-slate-900 text-slate-300 hover:bg-slate-800">
+                    <span>🇹🇷</span> Turkish Dramas
+                </button>
+                <button onclick="filterCategory('Indian Dramas')" id="sideBtnIndianDramas" class="side-cat-btn w-full py-2.5 px-3 rounded-xl font-black text-xs text-left shadow transition flex items-center gap-2 bg-slate-900 text-slate-300 hover:bg-slate-800">
+                    <span>🇮🇳</span> Indian Dramas
+                </button>
             </div>
-            <!-- Mascot GIF -->
-            <img src="https://media.giphy.com/media/3o7TKSjRrfIPjeiVyM/giphy.gif" alt="Animation" class="w-24 h-24 object-contain z-10 drop-shadow-lg transform hover:scale-110 transition duration-300">
-            <div class="absolute -right-4 -bottom-4 text-6xl opacity-20">⭐</div>
-            <div class="absolute left-1/2 top-0 text-5xl opacity-20">✨</div>
-        </div>
+        </aside>
+
+        <!-- Right Content Area -->
+        <main class="md:col-span-3 space-y-4">
+            
+            <!-- Welcome Banner (Single Instance Only) -->
+            <div>
+                <div class="relative bg-gradient-to-r from-amber-500 via-orange-500 to-pink-500 rounded-2xl p-4 overflow-hidden shadow-2xl flex items-center justify-between border-2 border-amber-300">
+                    <div class="z-10 max-w-[65%]">
+                        <span class="bg-black/30 text-amber-200 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">Welcome Everyone! 🥳</span>
+                        <h2 class="text-xl font-black text-white drop-shadow-md leading-tight mt-1">Watch Cartoons & Dramas!</h2>
+                        <p class="text-[11px] text-amber-100 font-bold mt-1">Tap & Play Unlimited Entertainment!</p>
+                    </div>
+                    <!-- Mascot GIF -->
+                    <img src="https://media.giphy.com/media/3o7TKSjRrfIPjeiVyM/giphy.gif" alt="Animation" class="w-24 h-24 object-contain z-10 drop-shadow-lg transform hover:scale-110 transition duration-300">
+                    <div class="absolute -right-4 -bottom-4 text-6xl opacity-20">⭐</div>
+                    <div class="absolute left-1/2 top-0 text-5xl opacity-20">✨</div>
+                </div>
+            </div>
+
+            <!-- Mobile Category Buttons (Visible only on small screens) -->
+            <div class="md:hidden overflow-x-auto pb-2 scrollbar-none">
+                <div class="flex gap-2 min-w-max">
+                    <button onclick="filterCategory('Urdu Cartoons')" id="btnUrduCartoons" class="cat-btn py-2.5 px-3 rounded-2xl font-black text-xs text-center shadow-lg border-2 transition transform active:scale-95 flex items-center justify-center gap-1.5 bg-amber-500 border-amber-300 text-slate-950">
+                        <span>🇵🇰</span> URDU CARTOONS
+                    </button>
+                    <button onclick="filterCategory('English Cartoons')" id="btnEnglishCartoons" class="cat-btn py-2.5 px-3 rounded-2xl font-black text-xs text-center shadow-lg border-2 transition transform active:scale-95 flex items-center justify-center gap-1.5 bg-slate-800 border-slate-700 text-slate-300">
+                        <span>🇬🇧</span> ENG CARTOONS
+                    </button>
+                    <button onclick="filterCategory('Pakistani Dramas')" id="btnPakistaniDramas" class="cat-btn py-2.5 px-3 rounded-2xl font-black text-xs text-center shadow-lg border-2 transition transform active:scale-95 flex items-center justify-center gap-1.5 bg-slate-800 border-slate-700 text-slate-300">
+                        <span>🇵🇰</span> PAK DRAMAS
+                    </button>
+                    <button onclick="filterCategory('Turkish Dramas')" id="btnTurkishDramas" class="cat-btn py-2.5 px-3 rounded-2xl font-black text-xs text-center shadow-lg border-2 transition transform active:scale-95 flex items-center justify-center gap-1.5 bg-slate-800 border-slate-700 text-slate-300">
+                        <span>🇹🇷</span> TURKISH DRAMAS
+                    </button>
+                    <button onclick="filterCategory('Indian Dramas')" id="btnIndianDramas" class="cat-btn py-2.5 px-3 rounded-2xl font-black text-xs text-center shadow-lg border-2 transition transform active:scale-95 flex items-center justify-center gap-1.5 bg-slate-800 border-slate-700 text-slate-300">
+                        <span>🇮🇳</span> INDIAN DRAMAS
+                    </button>
+                </div>
+            </div>
+
+            <!-- Shows Section -->
+            <section id="showsContainer">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 id="categoryTitle" class="text-sm font-black text-amber-400 uppercase tracking-wider flex items-center gap-1">
+                        <span>🎬</span> URDU CARTOONS
+                    </h2>
+                    <span class="text-[10px] text-slate-400 font-bold">Select a show to play</span>
+                </div>
+
+                <div id="showsGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <!-- Shows Cards Will Load Here -->
+                </div>
+            </section>
+        </main>
     </div>
-
-    <!-- Category Buttons -->
-    <div class="px-4 my-5 max-w-2xl mx-auto overflow-x-auto pb-2 scrollbar-none">
-        <div class="flex gap-2 min-w-max sm:grid sm:grid-cols-3 md:grid-cols-5">
-            <button onclick="filterCategory('Urdu Cartoons')" id="btnUrduCartoons" class="cat-btn py-2.5 px-3 rounded-2xl font-black text-xs text-center shadow-lg border-2 transition transform active:scale-95 flex items-center justify-center gap-1.5 bg-amber-500 border-amber-300 text-slate-950">
-                <span>🇵🇰</span> URDU CARTOONS
-            </button>
-            <button onclick="filterCategory('English Cartoons')" id="btnEnglishCartoons" class="cat-btn py-2.5 px-3 rounded-2xl font-black text-xs text-center shadow-lg border-2 transition transform active:scale-95 flex items-center justify-center gap-1.5 bg-slate-800 border-slate-700 text-slate-300">
-                <span>🇬🇧</span> ENG CARTOONS
-            </button>
-            <button onclick="filterCategory('Pakistani Dramas')" id="btnPakistaniDramas" class="cat-btn py-2.5 px-3 rounded-2xl font-black text-xs text-center shadow-lg border-2 transition transform active:scale-95 flex items-center justify-center gap-1.5 bg-slate-800 border-slate-700 text-slate-300">
-                <span>🇵🇰</span> PAK DRAMAS
-            </button>
-            <button onclick="filterCategory('Turkish Dramas')" id="btnTurkishDramas" class="cat-btn py-2.5 px-3 rounded-2xl font-black text-xs text-center shadow-lg border-2 transition transform active:scale-95 flex items-center justify-center gap-1.5 bg-slate-800 border-slate-700 text-slate-300">
-                <span>🇹🇷</span> TURKISH DRAMAS
-            </button>
-            <button onclick="filterCategory('Indian Dramas')" id="btnIndianDramas" class="cat-btn py-2.5 px-3 rounded-2xl font-black text-xs text-center shadow-lg border-2 transition transform active:scale-95 flex items-center justify-center gap-1.5 bg-slate-800 border-slate-700 text-slate-300">
-                <span>🇮🇳</span> INDIAN DRAMAS
-            </button>
-        </div>
-    </div>
-
-    <!-- Shows Section -->
-    <section id="showsContainer" class="px-4 max-w-2xl mx-auto">
-        <div class="flex items-center justify-between mb-3">
-            <h2 id="categoryTitle" class="text-sm font-black text-amber-400 uppercase tracking-wider flex items-center gap-1">
-                <span>🎬</span> URDU CARTOONS
-            </h2>
-            <span class="text-[10px] text-slate-400 font-bold">Select a show to play</span>
-        </div>
-
-        <div id="showsGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            <!-- Shows Cards Will Load Here -->
-        </div>
-    </section>
 
     <!-- Episode List Modal -->
     <div id="episodesModal" class="fixed inset-0 bg-slate-950/90 hidden flex justify-center items-center z-50 p-4 backdrop-blur-sm">
@@ -172,11 +204,11 @@
         let base64Thumbnail = '';
 
         const categoryButtons = {
-            'Urdu Cartoons': 'btnUrduCartoons',
-            'English Cartoons': 'btnEnglishCartoons',
-            'Pakistani Dramas': 'btnPakistaniDramas',
-            'Turkish Dramas': 'btnTurkishDramas',
-            'Indian Dramas': 'btnIndianDramas'
+            'Urdu Cartoons': { mobile: 'btnUrduCartoons', side: 'sideBtnUrduCartoons' },
+            'English Cartoons': { mobile: 'btnEnglishCartoons', side: 'sideBtnEnglishCartoons' },
+            'Pakistani Dramas': { mobile: 'btnPakistaniDramas', side: 'sideBtnPakistaniDramas' },
+            'Turkish Dramas': { mobile: 'btnTurkishDramas', side: 'sideBtnTurkishDramas' },
+            'Indian Dramas': { mobile: 'btnIndianDramas', side: 'sideBtnIndianDramas' }
         };
 
         function filterCategory(cat) {
@@ -184,13 +216,15 @@
             document.getElementById('categoryTitle').innerHTML = `<span>🎬</span> ${cat.toUpperCase()}`;
             
             Object.keys(categoryButtons).forEach(key => {
-                const btn = document.getElementById(categoryButtons[key]);
-                if (btn) {
-                    if (key === cat) {
-                        btn.className = "cat-btn py-2.5 px-3 rounded-2xl font-black text-xs text-center shadow-lg border-2 transition transform active:scale-95 flex items-center justify-center gap-1.5 bg-amber-500 border-amber-300 text-slate-950";
-                    } else {
-                        btn.className = "cat-btn py-2.5 px-3 rounded-2xl font-black text-xs text-center shadow-lg border-2 transition transform active:scale-95 flex items-center justify-center gap-1.5 bg-slate-800 border-slate-700 text-slate-300";
-                    }
+                const mobBtn = document.getElementById(categoryButtons[key].mobile);
+                const sideBtn = document.getElementById(categoryButtons[key].side);
+                
+                if (key === cat) {
+                    if (mobBtn) mobBtn.className = "cat-btn py-2.5 px-3 rounded-2xl font-black text-xs text-center shadow-lg border-2 transition transform active:scale-95 flex items-center justify-center gap-1.5 bg-amber-500 border-amber-300 text-slate-950";
+                    if (sideBtn) sideBtn.className = "side-cat-btn w-full py-2.5 px-3 rounded-xl font-black text-xs text-left shadow transition flex items-center gap-2 bg-amber-500 text-slate-950";
+                } else {
+                    if (mobBtn) mobBtn.className = "cat-btn py-2.5 px-3 rounded-2xl font-black text-xs text-center shadow-lg border-2 transition transform active:scale-95 flex items-center justify-center gap-1.5 bg-slate-800 border-slate-700 text-slate-300";
+                    if (sideBtn) sideBtn.className = "side-cat-btn w-full py-2.5 px-3 rounded-xl font-black text-xs text-left shadow transition flex items-center gap-2 bg-slate-900 text-slate-300 hover:bg-slate-800";
                 }
             });
 
